@@ -26,6 +26,8 @@ public class CoolWeatherDB {
     private SQLiteDatabase db;
     //// what just happened!?
 
+    private int a = 1;
+
     private CoolWeatherDB(Context context)
     {
         CoolWeatherOpenHelper dbHelper = new CoolWeatherOpenHelper(context,DB_NAME,null,VERSION);
