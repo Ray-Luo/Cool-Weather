@@ -24,7 +24,7 @@ public class CoolWeatherDB {
     private static CoolWeatherDB coolWeatherDB;
 
     private SQLiteDatabase db;
-    ////
+    //// what just happened!?
 
     private CoolWeatherDB(Context context)
     {
