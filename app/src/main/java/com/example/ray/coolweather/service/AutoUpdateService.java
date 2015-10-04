@@ -9,7 +9,7 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 
-import com.example.ray.coolweather.util.HttpCallbcakListener;
+import com.example.ray.coolweather.util.HttpCallbackListener;
 import com.example.ray.coolweather.util.HttpUtil;
 import com.example.ray.coolweather.util.Utility;
 
@@ -48,7 +48,7 @@ public class AutoUpdateService extends Service {
         String weatherCode = prefs.getString("weather_code", "");
         String address = "http://www.weather.com.cn/data/cityinfo/" +
                 weatherCode + ".html";
-        HttpUtil.sendHttpRequest(address,new HttpCallbcakListener()
+        HttpUtil.sendHttpRequest(address,new HttpCallbackListener()
         {
             @Override
             public void onFinish(String response)

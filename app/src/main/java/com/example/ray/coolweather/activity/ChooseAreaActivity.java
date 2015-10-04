@@ -20,7 +20,8 @@ import com.example.ray.coolweather.db.CoolWeatherDB;
 import com.example.ray.coolweather.model.City;
 import com.example.ray.coolweather.model.County;
 import com.example.ray.coolweather.model.Province;
-import com.example.ray.coolweather.util.HttpCallbcakListener;
+import com.example.ray.coolweather.util.HttpCallbackListener;
+import com.example.ray.coolweather.util.HttpCallbackListener;
 import com.example.ray.coolweather.util.HttpUtil;
 import com.example.ray.coolweather.util.Utility;
 
@@ -88,6 +89,14 @@ public class ChooseAreaActivity extends Activity {
                 {
                     selectedCity = cityList.get(position);
                     queryCounties();
+                }
+                else if (currentLevel == LEVEL_COUNTY) {
+                    String countyCode = countyList.get(position).getCountyCode();
+                    Intent intent = new Intent(ChooseAreaActivity.this,
+                            weatherActivity.class);
+                    intent.putExtra("county_code", countyCode);
+                    startActivity(intent);
+                    finish();
                 }
             }
         });
@@ -168,7 +177,7 @@ public class ChooseAreaActivity extends Activity {
         else
             address = "http://www.weather.com.cn/data/list3/city.xml";
         showProgressDialog();
-        HttpUtil.sendHttpRequest(address, new HttpCallbcakListener(){
+        HttpUtil.sendHttpRequest(address, new HttpCallbackListener(){
             @Override
             public void onFinish(String response)
             {
@@ -204,7 +213,7 @@ public class ChooseAreaActivity extends Activity {
                     @Override
                     public void run() {
                         closeProgressDialog();
-                        Toast.makeText(ChooseAreaActivity.thsi,"加载失败",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ChooseAreaActivity.this,"加载失败",Toast.LENGTH_SHORT).show();
                     }
                 });
             }

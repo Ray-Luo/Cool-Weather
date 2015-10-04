@@ -15,6 +15,10 @@ import android.widget.TextView;
 import com.example.ray.coolweather.R;
 import com.example.ray.coolweather.db.CoolWeatherDB;
 import com.example.ray.coolweather.service.AutoUpdateService;
+import com.example.ray.coolweather.util.HttpCallbackListener;
+import com.example.ray.coolweather.util.HttpCallbackListener;
+import com.example.ray.coolweather.util.HttpUtil;
+import com.example.ray.coolweather.util.Utility;
 
 import org.w3c.dom.Text;
 
@@ -23,7 +27,7 @@ import java.io.InputStream;
 /**
  * Created by Ray on 9/30/2015.
  */
-public class weatherActivity extends Activity implements onClickListener{
+public class weatherActivity extends Activity implements View.OnClickListener{
 
     private LinearLayout weatherInfoLayout;
     private TextView cityNameText;
@@ -80,7 +84,7 @@ public class weatherActivity extends Activity implements onClickListener{
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 String weatherCode = prefs.getString("weather_code","");
                 if(!TextUtils.isEmpty(weatherCode))
-                    queryWeatherInfo(weeatherCode);
+                    queryWeatherInfo(weatherCode);
                 break;
             default:
                 break;
@@ -102,4 +106,53 @@ public class weatherActivity extends Activity implements onClickListener{
         Intent intent = new Intent(this, AutoUpdateService.class);
         startService(intent);
     }
+
+    private void queryWeatherCode(String countyCode) {
+        String address = "http://www.weather.com.cn/data/list3/city" +
+                countyCode + ".xml";
+        queryFromServer(address, "countyCode");
+    }
+
+    private void queryWeatherInfo(String weatherCode) {
+        String address = "http://www.weather.com.cn/data/cityinfo/" +
+                weatherCode + ".html";
+        queryFromServer(address, "weatherCode");
+    }
+
+    private void queryFromServer(final String address, final String type) {
+        HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
+            @Override
+            public void onFinish(final String response) {
+                if ("countyCode".equals(type)) {
+                    if (!TextUtils.isEmpty(response)) {
+// 从服务器返回的数据中解析出天气代号
+                        String[] array = response.split("\\|");
+                        if (array != null && array.length == 2) {
+                            String weatherCode = array[1];
+                            queryWeatherInfo(weatherCode);
+                        }
+                    }
+                } else if ("weatherCode".equals(type)) {
+                    Utility.handleWeatherResponse(weatherActivity.this, response);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showWeather();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        publishText.setText("同步失败");
+                    }
+                });
+            }
+        });
+    }
+
 }
